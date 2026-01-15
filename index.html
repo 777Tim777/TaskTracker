@@ -1,1 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Tracker</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { Plus, Trash2, Edit2, Check, X } = lucide;
 
+    function TaskTracker() {
+      const [tasks, setTasks] = React.useState([]);
+      const [showForm, setShowForm] = React.useState(false);
+      const [editingId, setEditingId] = React.useState(null);
+      const [formData, setFormData] = React.useState({
+        title: '',
+        description: '',
+        status: 'todo',
+        priority: 'medium'
+      });
+
+      React.useEffect(() => {
+        loadTasks();
+      }, []);
+
+      const loadTasks = () => {
+        const stored = localStorage.getItem('tasks');
+        if (stored) {
+          setTasks(JSON.parse(stored));
+        }
+      };
+
+      const saveTasks = (newTasks) => {
+        localStorage.setItem('tasks', JSON.stringify(newTasks));
+        setTasks(newTasks);
+      };
+
+      const saveTask = () => {
+        if (!formData.title.trim()) return;
+
+        const task = {
+          id: editingId || `task_${Date.now()}`,
+          ...formData,
+          createdAt: editingId ? tasks.find(t => t.id === editingId)?.createdAt : new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+
+        if (editingId) {
+          saveTasks(tasks.map(t => t.id === editingId ? task : t));
+        } else {
+          saveTasks([...tasks, task]);
+        }
+
+        setFormData({ title: '', description: '', status: 'todo', priority: 'medium' });
+        setShowForm(false);
+        setEditingId(null);
+      };
+
+      const deleteTask = (id) => {
+        saveTasks(tasks.filter(t => t.id !== id));
+      };
+
+      const editTask = (task) => {
+        setFormData({
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          priority: task.priority
+        });
+        setEditingId(task.id);
+        setShowForm(true);
+      };
+
+      const cancelForm = () => {
+        setFormData({ title: '', description: '', status: 'todo', priority: 'medium' });
+        setShowForm(false);
+        setEditingId(null);
+      };
+
+      const statusColumns = {
+        todo: { title: 'To Do', color: 'bg-gray-100' },
+        inprogress: { title: 'In Progress', color: 'bg-blue-100' },
+        done: { title: 'Done', color: 'bg-green-100' }
+      };
+
+      const priorityColors = {
+        low: 'text-green-600',
+        medium: 'text-yellow-600',
+        high: 'text-red-600'
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-50 p-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-8">
+              <h1 className="text-3xl font-bold text-gray-900">Task Tracker</h1>
+              <button
+                onClick={() => setShowForm(true)}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+              >
+                <Plus size={20} />
+                New Task
+              </button>
+            </div>
+
+            {showForm && (
+              <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 className="text-xl font-semibold mb-4">
+                  {editingId ? 'Edit Task' : 'Create New Task'}
+                </h2>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    placeholder="Task title"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <textarea
+                    placeholder="Description"
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+                  />
+                  <div className="flex gap-4">
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="todo">To Do</option>
+                      <option value="inprogress">In Progress</option>
+                      <option value="done">Done</option>
+                    </select>
+                    <select
+                      value={formData.priority}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value })}
+                      className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="low">Low Priority</option>
+                      <option value="medium">Medium Priority</option>
+                      <option value="high">High Priority</option>
+                    </select>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={saveTask}
+                      className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                    >
+                      <Check size={20} />
+                      {editingId ? 'Update' : 'Create'}
+                    </button>
+                    <button
+                      onClick={cancelForm}
+                      className="flex items-center gap-2 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+                    >
+                      <X size={20} />
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Object.entries(statusColumns).map(([status, { title, color }]) => (
+                <div key={status} className="bg-white rounded-lg shadow-md p-4">
+                  <h3 className="font-semibold text-lg mb-4 pb-2 border-b">{title}</h3>
+                  <div className="space-y-3">
+                    {tasks
+                      .filter(task => task.status === status)
+                      .map(task => (
+                        <div key={task.id} className={`${color} p-4 rounded-lg`}>
+                          <div className="flex justify-between items-start mb-2">
+                            <h4 className="font-semibold text-gray-900">{task.title}</h4>
+                            <div className="flex gap-1">
+                              <button
+                                onClick={() => editTask(task)}
+                                className="p-1 hover:bg-white rounded"
+                              >
+                                <Edit2 size={16} className="text-gray-600" />
+                              </button>
+                              <button
+                                onClick={() => deleteTask(task.id)}
+                                className="p-1 hover:bg-white rounded"
+                              >
+                                <Trash2 size={16} className="text-red-600" />
+                              </button>
+                            </div>
+                          </div>
+                          {task.description && (
+                            <p className="text-sm text-gray-700 mb-2">{task.description}</p>
+                          )}
+                          <div className="flex justify-between items-center text-xs">
+                            <span className={`font-medium ${priorityColors[task.priority]}`}>
+                              {task.priority.toUpperCase()}
+                            </span>
+                            <span className="text-gray-500">
+                              {new Date(task.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<TaskTracker />, document.getElementById('root'));
+  </script>
+</body>
+</html>
+```
+
+4. Click **"Commit changes"**
+
+## Step 3: Enable GitHub Pages
+
+1. Go to your repository **Settings** (tab at the top)
+2. Scroll down to **"Pages"** in the left sidebar
+3. Under **"Source"**, select **"Deploy from a branch"**
+4. Under **"Branch"**, select **"main"** and **"/ (root)"**
+5. Click **"Save"**
+
+## Step 4: Access Your Tracker
+
+After a minute or two, your site will be live at:
+```
+https://YOUR-USERNAME.github.io/task-tracker/
