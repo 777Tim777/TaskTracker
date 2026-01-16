@@ -1,7 +1,7 @@
 # 🗂️ Task Tracker
 
-A simple, browser-based task tracking application built with React and Tailwind CSS.  
-The app allows users to create, edit, delete, and organize tasks by status, with data persisted locally in the browser.
+A simple, browser-based task tracking application inspired by JIRA-style workflows, built with React and Tailwind CSS.  
+The app allows users to manage tasks through a backlog and active board, assign tasks to team members, and safely manage task deletion — with all data persisted locally in the browser.
 
 🔗 **Live Demo:**  
 https://777tim777.github.io/TaskTracker/
@@ -10,9 +10,13 @@ https://777tim777.github.io/TaskTracker/
 
 ## ✨ Features
 
+- **JIRA-style workflow**
+  - Backlog for future work
+  - To Do, In Progress, and Done columns for active tasks
 - Create, edit, and delete tasks
-- Organize tasks into **To Do**, **In Progress**, and **Done** columns
-- Assign priority levels (Low, Medium, High)
+- **Delete confirmation** to prevent accidental data loss
+- **Task assignment** (Unassigned, Tim, JJ)
+- Priority levels (Low, Medium, High)
 - Persistent storage using **LocalStorage**
 - Responsive layout using **Tailwind CSS**
 - No backend or build step required
@@ -27,7 +31,7 @@ https://777tim777.github.io/TaskTracker/
 - **HTML5**
 - **Browser LocalStorage**
 
-This project is intentionally implemented without a build system to keep it lightweight and easy to deploy on GitHub Pages.
+This project is intentionally implemented without a build system to keep it lightweight, transparent, and easy to deploy on GitHub Pages.
 
 ---
 
@@ -74,19 +78,11 @@ TaskTracker/
 This project was created as a **learning and portfolio exercise** to:
 
 - Practice React fundamentals without a build tool
+- Implement a realistic, JIRA-inspired task workflow
+- Apply safe UX patterns (confirmation for destructive actions)
 - Understand client-side state management
 - Deploy a working web app using GitHub Pages
-- Build a small but complete, real-world usable application
-
----
-
-## 🔮 Possible Improvements
-
-- Convert to a modern React setup (Vite + ES modules)
-- Add drag-and-drop task movement
-- Add filters and search
-- Add backend persistence (API + database)
-- Add user authentication
+- Incrementally evolve features based on real user feedback
 
 ---
 
