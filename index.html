@@ -15,7 +15,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- Supabase client -->
+  <!-- Supabase v2 CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
@@ -26,7 +26,7 @@
     /* =========================
        Supabase configuration
        ========================= */
-    const supabase = supabasejs.createClient(
+    const supabase = window.supabase.createClient(
       "https://zzrqaqhpjrnxwmevcbth.supabase.co",
       "sb_publishable_UmLTm3tru75YB9SENN5avA_DPFoLF2x"
     );
@@ -53,9 +53,6 @@
         loadTasks();
       }, []);
 
-      /* =========================
-         Data functions (Supabase)
-         ========================= */
       async function loadTasks() {
         const { data, error } = await supabase
           .from("tasks")
@@ -81,14 +78,9 @@
         };
 
         if (editingId) {
-          await supabase
-            .from("tasks")
-            .update(taskData)
-            .eq("id", editingId);
+          await supabase.from("tasks").update(taskData).eq("id", editingId);
         } else {
-          await supabase
-            .from("tasks")
-            .insert(taskData);
+          await supabase.from("tasks").insert(taskData);
         }
 
         resetForm();
@@ -109,12 +101,7 @@
 
       async function deleteTask(id) {
         if (!window.confirm("Are you sure you want to delete this task?")) return;
-
-        await supabase
-          .from("tasks")
-          .delete()
-          .eq("id", id);
-
+        await supabase.from("tasks").delete().eq("id", id);
         loadTasks();
       }
 
@@ -143,9 +130,6 @@
         high: "text-red-600"
       };
 
-      /* =========================
-         UI
-         ========================= */
       return (
         <div className="max-w-7xl mx-auto p-6">
           <div className="flex justify-between items-center mb-6">
