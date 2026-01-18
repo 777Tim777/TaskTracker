@@ -12,14 +12,28 @@
   <!-- Babel for JSX -->
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-  <!-- Tailwind -->
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Supabase client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="bg-gray-50">
   <div id="root"></div>
 
   <script type="text/babel">
+    /* =========================
+       Supabase configuration
+       ========================= */
+    const supabase = supabasejs.createClient(
+      "https://zzrqaqhpjrnxwmevcbth.supabase.co",
+      "sb_publishable_UmLTm3tru75YB9SENN5avA_DPFoLF2x"
+    );
+
+    /* =========================
+       React App
+       ========================= */
     function TaskTracker() {
       const [tasks, setTasks] = React.useState([]);
       const [showForm, setShowForm] = React.useState(false);
@@ -36,42 +50,72 @@
       const ASSIGNEES = ["Unassigned", "Tim", "JJ"];
 
       React.useEffect(() => {
-        const stored = localStorage.getItem("tasks");
-        if (stored) setTasks(JSON.parse(stored));
+        loadTasks();
       }, []);
 
-      function saveTasks(newTasks) {
-        localStorage.setItem("tasks", JSON.stringify(newTasks));
-        setTasks(newTasks);
+      /* =========================
+         Data functions (Supabase)
+         ========================= */
+      async function loadTasks() {
+        const { data, error } = await supabase
+          .from("tasks")
+          .select("*")
+          .order("created_at", { ascending: true });
+
+        if (error) {
+          console.error("Error loading tasks:", error);
+        } else {
+          setTasks(data || []);
+        }
       }
 
-      function submitTask() {
+      async function submitTask() {
         if (!form.title.trim()) return;
 
-        const task = {
-          id: editingId || Date.now().toString(),
-          ...form,
-          createdAt: new Date().toISOString()
+        const taskData = {
+          title: form.title,
+          description: form.description,
+          status: form.status,
+          priority: form.priority,
+          assignee: form.assignee
         };
 
         if (editingId) {
-          saveTasks(tasks.map(t => (t.id === editingId ? task : t)));
+          await supabase
+            .from("tasks")
+            .update(taskData)
+            .eq("id", editingId);
         } else {
-          saveTasks([...tasks, task]);
+          await supabase
+            .from("tasks")
+            .insert(taskData);
         }
 
         resetForm();
+        loadTasks();
       }
 
       function editTask(task) {
-        setForm(task);
+        setForm({
+          title: task.title,
+          description: task.description || "",
+          status: task.status,
+          priority: task.priority,
+          assignee: task.assignee
+        });
         setEditingId(task.id);
         setShowForm(true);
       }
 
-      function deleteTask(id) {
+      async function deleteTask(id) {
         if (!window.confirm("Are you sure you want to delete this task?")) return;
-        saveTasks(tasks.filter(t => t.id !== id));
+
+        await supabase
+          .from("tasks")
+          .delete()
+          .eq("id", id);
+
+        loadTasks();
       }
 
       function resetForm() {
@@ -99,6 +143,9 @@
         high: "text-red-600"
       };
 
+      /* =========================
+         UI
+         ========================= */
       return (
         <div className="max-w-7xl mx-auto p-6">
           <div className="flex justify-between items-center mb-6">
