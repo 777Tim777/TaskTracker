@@ -1,7 +1,7 @@
 # 🗂️ Task Tracker
 
-A simple, browser-based task tracking application inspired by JIRA-style workflows, built with React and Tailwind CSS.  
-The app allows users to manage tasks through a backlog and active board, assign tasks to team members, and safely manage task deletion — with all data persisted locally in the browser.
+A simple, browser-based task tracking application inspired by JIRA-style workflows.  
+The app supports a shared task board with a backlog and active workflow, allowing multiple users to collaborate using a common data store.
 
 🔗 **Live Demo:**  
 https://777tim777.github.io/TaskTracker/
@@ -12,14 +12,14 @@ https://777tim777.github.io/TaskTracker/
 
 - **JIRA-style workflow**
   - Backlog for future work
-  - To Do, In Progress, and Done columns for active tasks
+  - To Do, In Progress, and Done columns
 - Create, edit, and delete tasks
-- **Delete confirmation** to prevent accidental data loss
+- **Delete confirmation** to prevent accidental removal
 - **Task assignment** (Unassigned, Tim, JJ)
 - Priority levels (Low, Medium, High)
-- Persistent storage using **LocalStorage**
-- Responsive layout using **Tailwind CSS**
-- No backend or build step required
+- **Shared storage** using Supabase (tasks visible across devices and users)
+- Responsive layout using Tailwind CSS
+- No custom backend server required
 
 ---
 
@@ -27,22 +27,21 @@ https://777tim777.github.io/TaskTracker/
 
 - **React 17 (UMD via CDN)**
 - **Tailwind CSS (CDN)**
+- **Supabase (PostgreSQL + API)**
 - **JavaScript (ES6+)**
 - **HTML5**
-- **Browser LocalStorage**
 
-This project is intentionally implemented without a build system to keep it lightweight, transparent, and easy to deploy on GitHub Pages.
+This project is intentionally implemented without a build step to keep it lightweight and easy to deploy on GitHub Pages.
 
 ---
 
 ## 🚀 Deployment
 
-The application is deployed using **GitHub Pages**.
+The frontend is deployed using **GitHub Pages**.
 
-### How it’s deployed:
-- The project consists of a single `index.html` file
-- React and Tailwind are loaded via CDN
-- GitHub Pages serves the app directly from the repository
+- The application consists of a single `index.html` file
+- React, Tailwind, and Supabase are loaded via CDN
+- Supabase provides shared persistence via a hosted PostgreSQL database
 
 ---
 
@@ -54,7 +53,7 @@ No installation required.
    ```bash
    git clone https://github.com/777tim777/TaskTracker.git
    ```
-2. Open `index.html` in your browser  
+2. Open `index.html` directly in your browser  
    **or**
 3. Serve it locally (optional):
    ```bash
@@ -79,10 +78,10 @@ This project was created as a **learning and portfolio exercise** to:
 
 - Practice React fundamentals without a build tool
 - Implement a realistic, JIRA-inspired task workflow
-- Apply safe UX patterns (confirmation for destructive actions)
-- Understand client-side state management
-- Deploy a working web app using GitHub Pages
-- Incrementally evolve features based on real user feedback
+- Introduce shared state using a backend-as-a-service (Supabase)
+- Apply safe UX patterns for destructive actions
+- Understand client–server interaction without managing a custom backend
+- Deploy a working collaborative web app using GitHub Pages
 
 ---
 
